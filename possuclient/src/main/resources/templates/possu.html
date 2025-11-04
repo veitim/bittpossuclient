@@ -7,8 +7,9 @@
 <body>
   <h1>POSSU Lipun tarkastus</h1>
 
-  <label>Lipun ID:</label>
-  <input type="text" id="ticketId">
+  <label>Lipun koodi:</label>
+  <input type="text" id="code">
+  <button onclick="getTickets()">LIPPUJA</button>
   <button onclick="getTicket()">Hae lippu</button>
   <button onclick="useTicket()">Käytä lippu</button>
 
@@ -16,29 +17,44 @@
   <pre id="output"></pre>
 
   <script>
-    async function getTicket() {
-      const id = document.getElementById("ticketId").value;
-      const output = document.getElementById("output");
+    async function getTickets() {
 
-      if (!id) {
-        output.textContent = "Anna lipun ID!";
-        return;
-      }
-
-      output.textContent = "Haetaan lippua...";
+    const output = document.getElementById("output");
 
       try {
-        const response = await fetch(`/hae/${id}`);
+        const response = await fetch(`/hae`);
         if (!response.ok) throw new Error(`Virhe ${response.status}`);
         const data = await response.text();
         output.textContent = data;
       } catch (err) {
         output.textContent = "Virhe: " + err.message;
       }
+
+    }
+
+    async function getTicket() {
+        const code = document.getElementById("code").value;
+        const output = document.getElementById("output");
+
+      if (!code) {
+        output.textContent = "Anna lipun koodi";
+        return;
+      }
+
+      output.textContent = "Haetaan lippua...";
+
+      try {
+        const response = await fetch(`/hae/${code}`);
+        if (!response.ok) throw new Error(`Virhe ${response.status}`);
+        const data = await response.json();
+        output.textContent = "ID: " + data.id + ", Koodi: " + data.code;
+      } catch (err) {
+        output.textContent = "Virhe: " + err.message;
+      }
     }
 
     async function useTicket() {
-      const id = document.getElementById("ticketId").value;
+      const id = document.getElementById("code").value;
       const output = document.getElementById("output");
 
       if (!id) {

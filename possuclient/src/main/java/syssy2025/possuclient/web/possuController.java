@@ -21,11 +21,21 @@ public class possuController {
             return "possu";
     }
 
-    @GetMapping("/hae/{id}")
+    @GetMapping("/hae")
     @ResponseBody
-    public ResponseEntity<String> getLippu(@PathVariable String id) {
+    public ResponseEntity<String> getLiput() {
         return webClient.get()
-                .uri("/api/tickets/{id}", id)
+                .uri("/api/tickets")
+                .retrieve()
+                .toEntity(String.class)
+                .block();
+    }
+
+    @GetMapping("/hae/{code}")
+    @ResponseBody
+    public ResponseEntity<String> getLippu(@PathVariable String code) {
+        return webClient.get()
+                .uri("/api/tickets?code={code}", code)
                 .retrieve()
                 .toEntity(String.class)
                 .block();
