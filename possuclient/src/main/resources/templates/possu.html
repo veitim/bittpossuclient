@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="fi" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>POSSU</title>
+</head>
+<body>
+  <h1>POSSU Lipun tarkastus</h1>
+
+  <label>Lipun ID:</label>
+  <input type="text" id="ticketId">
+  <button onclick="getTicket()">Hae lippu</button>
+  <button onclick="useTicket()">Käytä lippu</button>
+
+  <h2>Tulos</h2>
+  <pre id="output"></pre>
+
+  <script>
+    async function getTicket() {
+      const id = document.getElementById("ticketId").value;
+      const output = document.getElementById("output");
+
+      if (!id) {
+        output.textContent = "Anna lipun ID!";
+        return;
+      }
+
+      output.textContent = "Haetaan lippua...";
+
+      try {
+        const response = await fetch(`/hae/${id}`);
+        if (!response.ok) throw new Error(`Virhe ${response.status}`);
+        const data = await response.text();
+        output.textContent = data;
+      } catch (err) {
+        output.textContent = "Virhe: " + err.message;
+      }
+    }
+
+    async function useTicket() {
+      const id = document.getElementById("ticketId").value;
+      const output = document.getElementById("output");
+
+      if (!id) {
+        output.textContent = "Anna lipun ID!";
+        return;
+      }
+
+      output.textContent = "Merkitään lippu käytetyksi...";
+
+      try {
+        const response = await fetch(`/kayta/${id}`, {
+          method: "PATCH"
+        });
+
+        if (!response.ok) throw new Error(`Virhe ${response.status}`);
+
+        const data = await response.text();
+        output.textContent = "Lippu merkitty käytetyksi:\n\n" + data;
+      } catch (err) {
+        output.textContent = "Virhe: " + err.message;
+      }
+    }
+  </script>
+</body>
+</html>
